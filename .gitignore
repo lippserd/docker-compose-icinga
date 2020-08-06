@@ -1,0 +1,5 @@
+# Exclude all hidden files
+.*
+
+# Except those related to Git (and GitHub)
+!.git*
