@@ -32,6 +32,7 @@ services:
       - init-icinga2
     environment:
       ICINGA_MASTER: 1
+      HOST_NAME: icinga2
     image: icinga/icinga2
     logging: *default-logging
     ports:
