@@ -7,7 +7,8 @@ Ensure you have the latest Docker and docker-compose versions and
 then just run `docker-compose -p icinga-playground up` in order to start the Icinga stack.
 
 Icinga Web is provided on port **8080** and you can access the Icinga 2 API on port **5665**.
-The default user of Icinga Web is `icingaadmin` with password `icinga`.
+The default user of Icinga Web is `icingaadmin` with password `icinga` and
+the default user of the Icinga 2 API for Web is `icingaweb` with password `icingaweb`.
 
 ## Upgrading from v1.0.0 to v1.1.0
 
