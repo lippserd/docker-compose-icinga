@@ -32,7 +32,7 @@ services:
       - init-icinga2
     environment:
       ICINGA_MASTER: 1
-    image: icinga/icinga2
+    image: icinga/icinga2:master
     logging: *default-logging
     ports:
       - 5665:5665
@@ -41,13 +41,12 @@ services:
 
   icingadb:
     environment:
-      ICINGADB_MYSQL_HOST: icingadb-mysql
-      ICINGADB_MYSQL_DATABASE: icingadb
-      ICINGADB_MYSQL_USER: icingadb
-      ICINGADB_MYSQL_PASSWORD: ${ICINGADB_MYSQL_PASSWORD:-icingadb}
-      ICINGADB_REDIS_HOST: icingadb-redis
-      # Icinga DB connects to Redis on port 6380 by default but we're using the Redis default port 6379 here.
-      ICINGADB_REDIS_PORT: 6379
+      ICINGADB_DATABASE_HOST: icingadb-mysql
+      ICINGADB_DATABASE_PORT: 3306
+      ICINGADB_DATABASE_DATABASE: icingadb
+      ICINGADB_DATABASE_USER: icingadb
+      ICINGADB_DATABASE_PASSWORD: ${ICINGADB_MYSQL_PASSWORD:-icingadb}
+      ICINGADB_REDIS_ADDRESS: icingadb-redis:6379
     depends_on:
       - icingadb-mysql
       - icingadb-redis
@@ -68,12 +67,15 @@ services:
     logging: *default-logging
     volumes:
       - icingadb-mysql:/var/lib/mysql
+      - ./env/icingadb-mysql/privileges.sql:/docker-entrypoint-initdb.d/privileges.sql
 
   icingadb-redis:
     image: redis
     logging: *default-logging
 
   icingaweb:
+    build:
+      context: ./env/icingaweb2
     depends_on:
       - icingaweb-mysql
     environment:
@@ -81,8 +83,9 @@ services:
       icingaweb.authentication.icingaweb2.resource: icingaweb-mysql
       icingaweb.config.global.config_backend: db
       icingaweb.config.global.config_resource: icingaweb-mysql
+      icingaweb.config.global.module_path: /usr/share/icingaweb2/modules:/usr/share/icingaweb2-modules
       icingaweb.config.logging.log: php
-      icingaweb.enabledModules: icingadb,ipl
+      icingaweb.enabledModules: director, icingadb, incubator
       icingaweb.groups.icingaweb2.backend: db
       icingaweb.groups.icingaweb2.resource: icingaweb-mysql
       icingaweb.modules.icingadb.config.icingadb.resource: icingadb
@@ -110,7 +113,6 @@ services:
       icingaweb.roles.Administrators.groups: Administrators
       icingaweb.roles.Administrators.permissions: '*'
       icingaweb.roles.Administrators.users: icingaadmin
-    image: icinga/icingaweb2:master
     logging: *default-logging
     ports:
       - 8080:8080
