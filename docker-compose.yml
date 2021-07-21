@@ -14,7 +14,7 @@ x-icinga2-environment:
 
 networks:
   default:
-    name: icinga
+    name: icinga-playground
 
 services:
   # The Icinga 2 docker image does not support configuration via env vars at the moment.
