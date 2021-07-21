@@ -7,6 +7,11 @@ x-logging:
     max-file: "10"
     max-size: "1M"
 
+x-icinga2-environment:
+  &icinga2-environment
+  ICINGA_CN: icinga2
+  ICINGA_MASTER: 1
+
 networks:
   default:
     name: icinga
@@ -16,8 +21,7 @@ services:
   # So, we have to ship some configs with this little init container. Referenced in depends_on of the icinga2 service.
   init-icinga2:
     command: [ "/config/init-icinga2.sh" ]
-    environment:
-      ICINGA_MASTER: 1
+    environment: *icinga2-environment
     image: icinga/icinga2
     logging: *default-logging
     volumes:
@@ -30,8 +34,7 @@ services:
     depends_on:
       - icingadb-redis
       - init-icinga2
-    environment:
-      ICINGA_MASTER: 1
+    environment: *icinga2-environment
     image: icinga/icinga2:master
     logging: *default-logging
     ports:
