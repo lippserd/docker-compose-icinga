@@ -1,8 +1,6 @@
 FROM alpine/git
 WORKDIR /
-COPY icingadb-load-monitoring.patch .
-RUN git clone https://github.com/Icinga/icingadb-web.git icingadb && \
-    git apply --directory icingadb icingadb-load-monitoring.patch
+RUN git clone https://github.com/Icinga/icingadb-web.git icingadb
 
 FROM icinga/icingaweb2:2.9
 USER root
