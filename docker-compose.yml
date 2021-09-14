@@ -93,8 +93,8 @@ services:
       icingaweb.groups.icingaweb2.backend: db
       icingaweb.groups.icingaweb2.resource: icingaweb-mysql
       icingaweb.modules.icingadb.config.icingadb.resource: icingadb
-      icingaweb.modules.icingadb.config.redis1.host: icingadb-redis
-      icingaweb.modules.icingadb.config.redis1.port: 6379
+      icingaweb.modules.icingadb.redis.redis1.host: icingadb-redis
+      icingaweb.modules.icingadb.redis.redis1.port: 6379
       icingaweb.modules.monitoring.commandtransports.icinga2.host: icinga2
       icingaweb.modules.monitoring.commandtransports.icinga2.password: ${ICINGAWEB_ICINGA2_API_USER_PASSWORD:-icingaweb}
       icingaweb.modules.monitoring.commandtransports.icinga2.transport: api
