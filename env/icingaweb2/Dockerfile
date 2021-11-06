@@ -2,7 +2,7 @@ FROM alpine/git
 WORKDIR /
 RUN git clone https://github.com/Icinga/icingadb-web.git icingadb
 
-FROM icinga/icingaweb2:2.9
+FROM icinga/icingaweb2:master
 USER root
 RUN apt update \
     && apt install -y composer \
