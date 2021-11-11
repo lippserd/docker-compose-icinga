@@ -90,6 +90,7 @@ services:
       icingaweb.config.global.config_resource: icingaweb-mysql
       icingaweb.config.global.module_path: /usr/share/icingaweb2/modules
       icingaweb.config.logging.log: php
+      icingaweb.config.themes.default: Legacy
       icingaweb.enabledModules: director, icingadb, incubator
       icingaweb.groups.icingaweb2.backend: db
       icingaweb.groups.icingaweb2.resource: icingaweb-mysql
