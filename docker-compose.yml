@@ -97,10 +97,11 @@ services:
       icingaweb.modules.icingadb.config.icingadb.resource: icingadb
       icingaweb.modules.icingadb.redis.redis1.host: icingadb-redis
       icingaweb.modules.icingadb.redis.redis1.port: 6379
-      icingaweb.modules.monitoring.commandtransports.icinga2.host: icinga2
-      icingaweb.modules.monitoring.commandtransports.icinga2.password: ${ICINGAWEB_ICINGA2_API_USER_PASSWORD:-icingaweb}
-      icingaweb.modules.monitoring.commandtransports.icinga2.transport: api
-      icingaweb.modules.monitoring.commandtransports.icinga2.username: icingaweb
+      icingaweb.modules.icingadb.commandtransports.icinga2.host: icinga2
+      icingaweb.modules.icingadb.commandtransports.icinga2.port: 5665
+      icingaweb.modules.icingadb.commandtransports.icinga2.password: ${ICINGAWEB_ICINGA2_API_USER_PASSWORD:-icingaweb}
+      icingaweb.modules.icingadb.commandtransports.icinga2.transport: api
+      icingaweb.modules.icingadb.commandtransports.icinga2.username: icingaweb
       icingaweb.passwords.icingaweb2.icingaadmin: icinga
       icingaweb.resources.icingadb.charset: utf8mb4
       icingaweb.resources.icingadb.db: mysql
