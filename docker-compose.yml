@@ -87,7 +87,7 @@ services:
       icingaweb.authentication.icingaweb2.resource: icingaweb-mysql
       icingaweb.config.global.config_backend: db
       icingaweb.config.global.config_resource: icingaweb-mysql
-      icingaweb.config.global.module_path: /usr/share/icingaweb2/modules:/usr/share/icingaweb2-modules
+      icingaweb.config.global.module_path: /usr/share/icingaweb2/modules
       icingaweb.config.logging.log: php
       icingaweb.enabledModules: director, icingadb, incubator
       icingaweb.groups.icingaweb2.backend: db
