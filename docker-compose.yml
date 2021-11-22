@@ -1,16 +1,54 @@
 version: '3.7'
 
+x-icinga-director-config:
+  &icinga-director-config
+  icingaweb.modules.director.config.db.resource: director-mysql
+  icingaweb.modules.director.kickstart.config.endpoint: icinga2
+  icingaweb.modules.director.kickstart.config.host: icinga2
+  icingaweb.modules.director.kickstart.config.port: 5665
+  icingaweb.modules.director.kickstart.config.username: icingaweb
+  icingaweb.modules.director.kickstart.config.password: ${ICINGAWEB_ICINGA2_API_USER_PASSWORD:-icingaweb}
+  icingaweb.resources.director-mysql.charset: utf8mb4
+  icingaweb.resources.director-mysql.db: mysql
+  icingaweb.resources.director-mysql.dbname: director
+  icingaweb.resources.director-mysql.host: mysql
+  icingaweb.resources.director-mysql.password: ${ICINGA_DIRECTOR_MYSQL_PASSWORD:-director}
+  icingaweb.resources.director-mysql.type: db
+  icingaweb.resources.director-mysql.username: director
+
+x-icinga-web-config:
+  &icinga-web-config
+  icingaweb.authentication.icingaweb2.backend: db
+  icingaweb.authentication.icingaweb2.resource: icingaweb-mysql
+  icingaweb.config.global.config_backend: db
+  icingaweb.config.global.config_resource: icingaweb-mysql
+  icingaweb.config.global.module_path: /usr/share/icingaweb2/modules
+  icingaweb.config.logging.log: php
+  icingaweb.groups.icingaweb2.backend: db
+  icingaweb.groups.icingaweb2.resource: icingaweb-mysql
+  icingaweb.passwords.icingaweb2.icingaadmin: icinga
+  icingaweb.resources.icingaweb-mysql.charset: utf8mb4
+  icingaweb.resources.icingaweb-mysql.db: mysql
+  icingaweb.resources.icingaweb-mysql.dbname: icingaweb
+  icingaweb.resources.icingaweb-mysql.host: mysql
+  icingaweb.resources.icingaweb-mysql.password: icingaweb
+  icingaweb.resources.icingaweb-mysql.type: db
+  icingaweb.resources.icingaweb-mysql.username: icingaweb
+  icingaweb.roles.Administrators.groups: Administrators
+  icingaweb.roles.Administrators.permissions: '*'
+  icingaweb.roles.Administrators.users: icingaadmin
+
+x-icinga2-environment:
+  &icinga2-environment
+  ICINGA_CN: icinga2
+  ICINGA_MASTER: 1
+
 x-logging:
   &default-logging
   driver: "json-file"
   options:
     max-file: "10"
     max-size: "1M"
-
-x-icinga2-environment:
-  &icinga2-environment
-  ICINGA_CN: icinga2
-  ICINGA_MASTER: 1
 
 networks:
   default:
@@ -71,16 +109,7 @@ services:
     depends_on:
       - mysql
     environment:
-      icingaweb.authentication.icingaweb2.backend: db
-      icingaweb.authentication.icingaweb2.resource: icingaweb-mysql
-      icingaweb.config.global.config_backend: db
-      icingaweb.config.global.config_resource: icingaweb-mysql
-      icingaweb.config.global.module_path: /usr/share/icingaweb2/modules
-      icingaweb.config.logging.log: php
-      icingaweb.config.themes.default: Legacy
       icingaweb.enabledModules: director, icingadb, incubator
-      icingaweb.groups.icingaweb2.backend: db
-      icingaweb.groups.icingaweb2.resource: icingaweb-mysql
       icingaweb.modules.icingadb.config.icingadb.resource: icingadb
       icingaweb.modules.icingadb.redis.redis1.host: icingadb-redis
       icingaweb.modules.icingadb.redis.redis1.port: 6379
@@ -89,24 +118,15 @@ services:
       icingaweb.modules.icingadb.commandtransports.icinga2.password: ${ICINGAWEB_ICINGA2_API_USER_PASSWORD:-icingaweb}
       icingaweb.modules.icingadb.commandtransports.icinga2.transport: api
       icingaweb.modules.icingadb.commandtransports.icinga2.username: icingaweb
-      icingaweb.passwords.icingaweb2.icingaadmin: icinga
       icingaweb.resources.icingadb.charset: utf8mb4
       icingaweb.resources.icingadb.db: mysql
       icingaweb.resources.icingadb.dbname: icingadb
       icingaweb.resources.icingadb.host: mysql
       icingaweb.resources.icingadb.password: ${ICINGADB_MYSQL_PASSWORD:-icingadb}
       icingaweb.resources.icingadb.type: db
-      icingaweb.resources.icingadb.username: ${ICINGADB_MYSQL_USER:-icingadb}
-      icingaweb.resources.icingaweb-mysql.charset: utf8mb4
-      icingaweb.resources.icingaweb-mysql.db: mysql
-      icingaweb.resources.icingaweb-mysql.dbname: icingaweb
-      icingaweb.resources.icingaweb-mysql.host: mysql
-      icingaweb.resources.icingaweb-mysql.password: ${ICINGAWEB_MYSQL_PASSWORD:-icingaweb}
-      icingaweb.resources.icingaweb-mysql.type: db
-      icingaweb.resources.icingaweb-mysql.username: icingaweb
-      icingaweb.roles.Administrators.groups: Administrators
-      icingaweb.roles.Administrators.permissions: '*'
-      icingaweb.roles.Administrators.users: icingaadmin
+      icingaweb.resources.icingadb.username: icingadb
+      <<: *icinga-director-config
+      <<: *icinga-web-config
     logging: *default-logging
     ports:
       - 8080:8080
@@ -121,8 +141,9 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_RANDOM_ROOT_PASSWORD: 1
-      ICINGAWEB_MYSQL_PASSWORD: ${ICINGAWEB_MYSQL_PASSWORD:-icingaweb}
       ICINGADB_MYSQL_PASSWORD: ${ICINGADB_MYSQL_PASSWORD:-icingadb}
+      ICINGAWEB_MYSQL_PASSWORD: ${ICINGAWEB_MYSQL_PASSWORD:-icingaweb}
+      ICINGA_DIRECTOR_MYSQL_PASSWORD: ${ICINGA_DIRECTOR_MYSQL_PASSWORD:-director}
     logging: *default-logging
     volumes:
       - mysql:/var/lib/mysql
