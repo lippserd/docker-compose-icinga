@@ -55,6 +55,19 @@ networks:
     name: icinga-playground
 
 services:
+  icinga-director-mysql:
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: 1
+      MYSQL_DATABASE: director
+      MYSQL_USER: director
+      MYSQL_PASSWORD: ${ICINGA_DIRECTOR_MYSQL_PASSWORD:-director}
+    image: mysql
+    logging: *default-logging
+    restart: unless-stopped
+    volumes:
+      - icinga-director-mysql:/var/lib/mysql
+
   # The Icinga 2 docker image does not support configuration via env vars at the moment.
   # So, we have to ship some configs with this little init container. Referenced in depends_on of the icinga2 service.
   init-icinga2:
@@ -162,7 +175,8 @@ services:
       - icingaweb-mysql:/var/lib/mysql
 
 volumes:
+  icinga-director-mysql:
   icinga2:
   icingadb-mysql:
-  icingaweb:
   icingaweb-mysql:
+  icingaweb:
