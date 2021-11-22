@@ -129,6 +129,18 @@ services:
     image: redis
     logging: *default-logging
 
+  icingaweb-mysql:
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: 1
+      MYSQL_DATABASE: icingaweb
+      MYSQL_USER: icingaweb
+      MYSQL_PASSWORD: ${ICINGAWEB_MYSQL_PASSWORD:-icingaweb}
+    image: mysql
+    logging: *default-logging
+    volumes:
+      - icingaweb-mysql:/var/lib/mysql
+
   icingaweb:
     build:
       context: ./env/icingaweb2
@@ -161,18 +173,6 @@ services:
     restart: unless-stopped
     volumes:
       - icingaweb:/data
-
-  icingaweb-mysql:
-    command: --default-authentication-plugin=mysql_native_password
-    environment:
-      MYSQL_RANDOM_ROOT_PASSWORD: 1
-      MYSQL_DATABASE: icingaweb
-      MYSQL_USER: icingaweb
-      MYSQL_PASSWORD: ${ICINGAWEB_MYSQL_PASSWORD:-icingaweb}
-    image: mysql
-    logging: *default-logging
-    volumes:
-      - icingaweb-mysql:/var/lib/mysql
 
 volumes:
   icinga-director-mysql:
