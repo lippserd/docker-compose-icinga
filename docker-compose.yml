@@ -72,7 +72,7 @@ services:
     logging: *default-logging
     volumes:
       - icingadb-mysql:/var/lib/mysql
-      - ./env/icingadb-mysql/privileges.sql:/docker-entrypoint-initdb.d/privileges.sql
+      - ./env/icingadb-mysql:/docker-entrypoint-initdb.d
 
   icingadb-redis:
     image: redis
