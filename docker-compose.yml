@@ -46,33 +46,20 @@ services:
 
   icingadb:
     environment:
-      ICINGADB_DATABASE_HOST: icingadb-mysql
+      ICINGADB_DATABASE_HOST: mysql
       ICINGADB_DATABASE_PORT: 3306
       ICINGADB_DATABASE_DATABASE: icingadb
       ICINGADB_DATABASE_USER: icingadb
       ICINGADB_DATABASE_PASSWORD: ${ICINGADB_MYSQL_PASSWORD:-icingadb}
       ICINGADB_REDIS_ADDRESS: icingadb-redis:6379
     depends_on:
-      - icingadb-mysql
+      - mysql
       - icingadb-redis
     image: icinga/icingadb:master
     logging: *default-logging
     # Restart Icinga DB container automatically since we have to wait for the database to be ready.
     # Please note that this needs a more sophisticated solution.
     restart: unless-stopped
-
-  icingadb-mysql:
-    command: --default-authentication-plugin=mysql_native_password
-    environment:
-      MYSQL_RANDOM_ROOT_PASSWORD: 1
-      MYSQL_DATABASE: icingadb
-      MYSQL_USER: icingadb
-      MYSQL_PASSWORD: ${ICINGADB_MYSQL_PASSWORD:-icingadb}
-    image: mysql
-    logging: *default-logging
-    volumes:
-      - icingadb-mysql:/var/lib/mysql
-      - ./env/icingadb-mysql:/docker-entrypoint-initdb.d
 
   icingadb-redis:
     image: redis
@@ -82,7 +69,7 @@ services:
     build:
       context: ./env/icingaweb2
     depends_on:
-      - icingaweb-mysql
+      - mysql
     environment:
       icingaweb.authentication.icingaweb2.backend: db
       icingaweb.authentication.icingaweb2.resource: icingaweb-mysql
@@ -106,14 +93,14 @@ services:
       icingaweb.resources.icingadb.charset: utf8mb4
       icingaweb.resources.icingadb.db: mysql
       icingaweb.resources.icingadb.dbname: icingadb
-      icingaweb.resources.icingadb.host: icingadb-mysql
+      icingaweb.resources.icingadb.host: mysql
       icingaweb.resources.icingadb.password: ${ICINGADB_MYSQL_PASSWORD:-icingadb}
       icingaweb.resources.icingadb.type: db
       icingaweb.resources.icingadb.username: ${ICINGADB_MYSQL_USER:-icingadb}
       icingaweb.resources.icingaweb-mysql.charset: utf8mb4
       icingaweb.resources.icingaweb-mysql.db: mysql
       icingaweb.resources.icingaweb-mysql.dbname: icingaweb
-      icingaweb.resources.icingaweb-mysql.host: icingaweb-mysql
+      icingaweb.resources.icingaweb-mysql.host: mysql
       icingaweb.resources.icingaweb-mysql.password: ${ICINGAWEB_MYSQL_PASSWORD:-icingaweb}
       icingaweb.resources.icingaweb-mysql.type: db
       icingaweb.resources.icingaweb-mysql.username: icingaweb
@@ -129,20 +116,22 @@ services:
     volumes:
       - icingaweb:/data
 
-  icingaweb-mysql:
+  mysql:
+    # see https://hub.docker.com/_/mariadb
+    image: mariadb
     command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_RANDOM_ROOT_PASSWORD: 1
-      MYSQL_DATABASE: icingaweb
-      MYSQL_USER: icingaweb
-      MYSQL_PASSWORD: ${ICINGAWEB_MYSQL_PASSWORD:-icingaweb}
-    image: mysql
+      ICINGAWEB_MYSQL_PASSWORD: ${ICINGAWEB_MYSQL_PASSWORD}
+      ICINGADB_MYSQL_PASSWORD: ${ICINGADB_MYSQL_PASSWORD}
     logging: *default-logging
     volumes:
-      - icingaweb-mysql:/var/lib/mysql
+      # - ./mysql:/var/lib/mysql
+      - mysql:/var/lib/mysql
+      - ./init-mysql.sh:/docker-entrypoint-initdb.d/init-mysql.sh
 
 volumes:
   icinga2:
-  icingadb-mysql:
+  mysql:
   icingaweb:
   icingaweb-mysql:
