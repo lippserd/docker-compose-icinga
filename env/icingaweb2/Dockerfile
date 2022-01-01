@@ -9,6 +9,7 @@ FROM icinga/icingaweb2:master
 USER root
 RUN apt update \
     && apt install -y composer \
+    && composer config -d /usr/share/icinga-php/ipl platform.php `php -i | awk '/PHP Version/ {print $NF; exit}'` \
     && composer require -d /usr/share/icinga-php/ipl ipl/stdlib:dev-master \
     && composer require -d /usr/share/icinga-php/ipl ipl/html:dev-master \
     && composer require -d /usr/share/icinga-php/ipl ipl/orm:dev-master \
