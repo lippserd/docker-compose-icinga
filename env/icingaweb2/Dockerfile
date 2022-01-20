@@ -9,14 +9,17 @@ FROM icinga/icingaweb2:master
 USER root
 RUN apt update \
     && apt install -y composer \
-    && composer require -d /usr/share/icinga-php/ipl ipl/stdlib:dev-master \
+    && composer require -d /usr/share/icinga-php/ipl ipl/stdlib:0.10.0 \
     && composer require -d /usr/share/icinga-php/ipl ipl/html:dev-master \
     && composer require -d /usr/share/icinga-php/ipl ipl/orm:dev-master \
     && composer require -d /usr/share/icinga-php/ipl ipl/sql:dev-master \
     && composer require -d /usr/share/icinga-php/ipl ipl/validator:dev-master \
-    && composer require -d /usr/share/icinga-php/ipl ipl/web:dev-master \
+    && composer require -d /usr/share/icinga-php/ipl ipl/web:0.3.0 \
     && composer update -d /usr/share/icinga-php/ipl
 RUN rm -rf /usr/share/icingaweb2/modules/icingadb/*
+RUN mv /entrypoint /entrypoint_bin
+COPY entrypoint_bash /entrypoint
+RUN chmod +x /entrypoint
 USER www-data
 COPY --from=0 /icingadb /usr/share/icingaweb2/modules/icingadb
 COPY --from=0 /Legacy.less /usr/share/icingaweb2/public/css/themes/Legacy.less
