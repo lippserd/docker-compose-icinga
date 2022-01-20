@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -m
+/entrypoint_bin bash -eo pipefail -c ". /etc/apache2/envvars; exec apache2 -DFOREGROUND"&
+sleep 20
+/usr/local/bin/icingacli director daemon run &
+fg %1
