@@ -22,7 +22,7 @@ services:
   init-icinga2:
     command: [ "/config/init-icinga2.sh" ]
     environment: *icinga2-environment
-    image: icinga/icinga2
+    image: icinga/icinga2:latest
     logging: *default-logging
     volumes:
       - icinga2:/data
@@ -36,7 +36,7 @@ services:
       - icingadb-redis
       - init-icinga2
     environment: *icinga2-environment
-    image: icinga/icinga2:master
+    image: icinga/icinga2:latest
     logging: *default-logging
     ports:
       - 5665:5665
