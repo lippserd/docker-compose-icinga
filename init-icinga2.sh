@@ -11,3 +11,11 @@ if [ ! -f /data/etc/icinga2/features-enabled/icingadb.conf ]; then
   mkdir -p /data/etc/icinga2/features-enabled
   cat /config/icingadb.conf >/data/etc/icinga2/features-enabled/icingadb.conf
 fi
+
+cat >> /data/etc/icinga2/icinga2.conf <<EOF
+
+/** 
+ * custom configuration files
+ */
+include_recursive "/custom_data/custom.conf.d"
+EOF
