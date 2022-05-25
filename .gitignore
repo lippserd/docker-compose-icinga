@@ -3,3 +3,4 @@
 
 # Except those related to Git (and GitHub)
 !.git*
+icinga2.conf.d/*
