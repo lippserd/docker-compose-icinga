@@ -1,0 +1,21 @@
+version: "3.7"
+
+x-logging:
+  &default-logging
+  driver: "json-file"
+  options:
+    max-file: "10"
+    max-size: "1M"
+
+services:
+  icinga-agent:
+    build:
+      context: env
+      dockerfile: icinga2/Dockerfile
+    environment:
+      ICINGA_CACERT: "$(< ./env/agent/icinga-ca.crt)"
+      ICINGA_TICKET: "$(< ./env/agent/icinga-agent.ticket)"
+      ICINGA_ZONE: mrf2-zone
+      ICINGA_ENDPOINT: icinga2,$ICINGA_MASTER_ADDR,5665
+    logging: *default-logging
+    network_mode: "host"

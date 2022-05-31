@@ -12,10 +12,13 @@ if [ ! -f /data/etc/icinga2/features-enabled/icingadb.conf ]; then
   cat /config/icingadb.conf >/data/etc/icinga2/features-enabled/icingadb.conf
 fi
 
-cat >> /data/etc/icinga2/icinga2.conf <<EOF
+if [ ! -f /tmp/custom_config_included.flag ]; then
+  cat >>/data/etc/icinga2/icinga2.conf <<EOF
 
 /** 
  * custom configuration files
  */
 include_recursive "/custom_data/custom.conf.d"
 EOF
+  touch /tmp/custom_config_included.flag
+fi

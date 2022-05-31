@@ -36,7 +36,9 @@ services:
       - icingadb-redis
       - init-icinga2
     environment: *icinga2-environment
-    image: icinga/icinga2:latest
+#    image: icinga/icinga2:latest
+    build:
+      context: env/icinga2
     logging: *default-logging
     ports:
       - 5665:5665
