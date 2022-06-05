@@ -24,10 +24,10 @@ EOF
 fi
 
 if [ ! -f /tmp/id_rsa ]; then
-  /usr/bin/ssh-keygen -f /tmp/id_rsa -N ''
+  /usr/bin/ssh-keygen -f /data/etc/icinga2/id_rsa -N ''
 fi
 
-cat /tmp/id_rsa.pub
+cat /data/etc/icinga2/id_rsa.pub
 
 if [ -f /data/etc/icinga2/conf.d/hosts.conf ] ; then
   rm -f /data/etc/icinga2/conf.d/hosts.conf
