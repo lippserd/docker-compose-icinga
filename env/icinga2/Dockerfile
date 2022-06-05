@@ -4,7 +4,7 @@ USER root
 
 RUN apt update && \
     apt upgrade -y && \
-    apt install -y make snmp && \
+    apt install -y make snmp less && \
     cpan String::Random && \
     apt clean -y && \
     curl https://raw.githubusercontent.com/nguttman/Nagios-Checks/master/SIP/check_sip2 \

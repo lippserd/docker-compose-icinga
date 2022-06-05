@@ -22,3 +22,13 @@ include_recursive "/custom_data/custom.conf.d"
 EOF
   touch /tmp/custom_config_included.flag
 fi
+
+if [ ! -f /tmp/id_rsa ]; then
+  /usr/bin/ssh-keygen -f /tmp/id_rsa -N ''
+fi
+
+cat /tmp/id_rsa.pub
+
+if [ -f /data/etc/icinga2/conf.d/hosts.conf ] ; then
+  rm -f /data/etc/icinga2/conf.d/hosts.conf
+fi
