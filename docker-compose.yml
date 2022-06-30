@@ -89,7 +89,8 @@ services:
       ICINGADB_DATABASE_DATABASE: icingadb
       ICINGADB_DATABASE_USER: icingadb
       ICINGADB_DATABASE_PASSWORD: ${ICINGADB_MYSQL_PASSWORD:-icingadb}
-      ICINGADB_REDIS_ADDRESS: icingadb-redis:6379
+      ICINGADB_REDIS_HOST: icingadb-redis
+      ICINGADB_REDIS_PORT: 6379
     depends_on:
       - mysql
       - icingadb-redis
