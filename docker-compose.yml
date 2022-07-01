@@ -96,9 +96,6 @@ services:
       - icingadb-redis
     image: icinga/icingadb
     logging: *default-logging
-    # Restart Icinga DB container automatically since we have to wait for the database to be ready.
-    # Please note that this needs a more sophisticated solution.
-    restart: unless-stopped
 
   icingadb-redis:
     image: redis
