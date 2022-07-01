@@ -129,7 +129,7 @@ services:
       - 8080:8080
     # Restart Icinga Web container automatically since we have to wait for the database to be ready.
     # Please note that this needs a more sophisticated solution.
-    restart: unless-stopped
+    restart: on-failure
     volumes:
       - icingaweb:/data
 
