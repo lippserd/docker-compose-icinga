@@ -55,6 +55,26 @@ networks:
     name: icinga-playground
 
 services:
+  director:
+    command:
+      - /bin/bash
+      - -ce
+      - |
+        echo "Testing the database connection. Container could restart."
+        (echo > /dev/tcp/mysql/3306) >/dev/null 2>&1
+        echo "Testing the Icinga 2 API connection. Container could restart."
+        (echo > /dev/tcp/icinga2/5665) >/dev/null 2>&1
+        icingacli director migration run
+        (icingacli director kickstart required && icingacli director kickstart run && icingacli director config deploy) || true
+        echo "Starting Icinga Director daemon."
+        icingacli director daemon run
+    entrypoint: []
+    logging: *default-logging
+    image: icinga/icingaweb2
+    restart: on-failure
+    volumes:
+      - icingaweb:/data
+
   # The Icinga 2 docker image does not support configuration via env vars at the moment.
   # So, we have to ship some configs with this little init container. Referenced in depends_on of the icinga2 service.
   init-icinga2:

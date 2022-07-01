@@ -13,6 +13,7 @@ the default user of the Icinga 2 API for Web is `icingaweb` with password `icing
 ## Upgrading from v1.1.0 to v1.2.0
 
 **v1.2.0** deploys Icinga Web ≥ 2.11.0, Icinga 2 ≥ 2.13.4, Icinga DB ≥ 1.0.0 and Icinga DB Web ≥ 1.0.0.
+The Icinga Director is also set up and its daemon started, all in a separate container.
 
 The easiest way to upgrade is to start over, removing all the volumes and
 therefore wiping out any configurations you have changed:
