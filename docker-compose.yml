@@ -1,5 +1,23 @@
 version: '3.7'
 
+x-icinga-db-web-config:
+  &icinga-db-web-config
+  icingaweb.modules.icingadb.config.icingadb.resource: icingadb
+  icingaweb.modules.icingadb.redis.redis1.host: icingadb-redis
+  icingaweb.modules.icingadb.redis.redis1.port: 6379
+  icingaweb.modules.icingadb.commandtransports.icinga2.host: icinga2
+  icingaweb.modules.icingadb.commandtransports.icinga2.port: 5665
+  icingaweb.modules.icingadb.commandtransports.icinga2.password: ${ICINGAWEB_ICINGA2_API_USER_PASSWORD:-icingaweb}
+  icingaweb.modules.icingadb.commandtransports.icinga2.transport: api
+  icingaweb.modules.icingadb.commandtransports.icinga2.username: icingaweb
+  icingaweb.resources.icingadb.charset: utf8mb4
+  icingaweb.resources.icingadb.db: mysql
+  icingaweb.resources.icingadb.dbname: icingadb
+  icingaweb.resources.icingadb.host: mysql
+  icingaweb.resources.icingadb.password: ${ICINGADB_MYSQL_PASSWORD:-icingadb}
+  icingaweb.resources.icingadb.type: db
+  icingaweb.resources.icingadb.username: icingadb
+
 x-icinga-director-config:
   &icinga-director-config
   icingaweb.modules.director.config.db.resource: director-mysql
@@ -126,21 +144,7 @@ services:
       - mysql
     environment:
       icingaweb.enabledModules: director, icingadb, incubator
-      icingaweb.modules.icingadb.config.icingadb.resource: icingadb
-      icingaweb.modules.icingadb.redis.redis1.host: icingadb-redis
-      icingaweb.modules.icingadb.redis.redis1.port: 6379
-      icingaweb.modules.icingadb.commandtransports.icinga2.host: icinga2
-      icingaweb.modules.icingadb.commandtransports.icinga2.port: 5665
-      icingaweb.modules.icingadb.commandtransports.icinga2.password: ${ICINGAWEB_ICINGA2_API_USER_PASSWORD:-icingaweb}
-      icingaweb.modules.icingadb.commandtransports.icinga2.transport: api
-      icingaweb.modules.icingadb.commandtransports.icinga2.username: icingaweb
-      icingaweb.resources.icingadb.charset: utf8mb4
-      icingaweb.resources.icingadb.db: mysql
-      icingaweb.resources.icingadb.dbname: icingadb
-      icingaweb.resources.icingadb.host: mysql
-      icingaweb.resources.icingadb.password: ${ICINGADB_MYSQL_PASSWORD:-icingadb}
-      icingaweb.resources.icingadb.type: db
-      icingaweb.resources.icingadb.username: icingadb
+      <<: *icinga-db-web-config
       <<: *icinga-director-config
       <<: *icinga-web-config
     logging: *default-logging
