@@ -23,7 +23,7 @@ export DOCKER_HOST=unix:///run/user/$UID/podman/podman.sock
 echo "export DOCKER_HOST=unix:///run/user/$UID/podman/podman.sock" >> ~/.bashrc
 ````
 
-Furthermore you need an older docker-compose version:
+Furthermore you need an older docker-compose version (because of compability to [podman](https://github.com/containers/podman/issues/11822)):
 ````bash
 wget https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64 -O /usr/local/sbin/docker-compose1.29.2
 ````
@@ -42,6 +42,12 @@ echo "export DOCKER_HOST=unix:///run/user/$UID/podman/podman.sock" >> ~/.bashrc
 Enable lingering for user (**as root**). If you forget this step, the containers will be stopped if the user logs out.
 ````bash
 loginctl enable-linger pod_icinga_cluster
+````
+
+To start the container use now the following command:
+````bash
+# Change directory to the git_clone
+/usr/local/sbin/docker-compose1.29.2 up -d
 ````
 
 
@@ -64,3 +70,4 @@ The easiest way to upgrade is to start over, removing all the volumes and
 therefore wiping out any configurations you have changed:
 
 `docker-compose down --volumes && docker-compose build --pull && docker-compose -p icinga-playground up -d`
+
