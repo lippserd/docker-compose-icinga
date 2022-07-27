@@ -19,3 +19,16 @@ if [ -z "$optional_confd" ]; then
   echo "Create include_recursive for custom.conf.d in icinga2.conf"
   echo 'include_recursive "/custom_data/custom.conf.d"' >> /etc/icinga2/icinga2.conf
 fi
+
+rm -f /etc/icinga2/conf.d/hosts.conf
+
+cat <<EOL > /etc/icinga2/conf.d/hosts.conf
+object Host NodeName {
+  /* Import the default host template defined in `templates.conf`. */
+  import "generic-host"
+
+  /* Specify the address attributes for checks e.g. `ssh` or `http`. */
+  address = "127.0.0.1"
+  address6 = "::1"
+}
+EOL
