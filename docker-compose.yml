@@ -74,6 +74,7 @@ networks:
 
 services:
   director:
+    container_name: director
     command:
       - /bin/bash
       - -ce
@@ -102,11 +103,12 @@ services:
     logging: *default-logging
     volumes:
       - icinga2:/data
-      - ./icingadb.conf:/config/icingadb.conf
-      - ./icingaweb-api-user.conf:/config/icingaweb-api-user.conf
-      - ./init-icinga2.sh:/config/init-icinga2.sh
+      - ./icingadb.conf:/config/icingadb.conf:z
+      - ./icingaweb-api-user.conf:/config/icingaweb-api-user.conf:z
+      - ./init-icinga2.sh:/config/init-icinga2.sh:z
 
   icinga2:
+    container_name: icinga2
     command: [ "sh", "-c", "sleep 5 ; icinga2 daemon" ]
     depends_on:
       - icingadb-redis
@@ -118,9 +120,10 @@ services:
       - 5665:5665
     volumes:
       - icinga2:/data
-      - ./icinga2.conf.d:/custom_data/custom.conf.d
+      - ./icinga2.conf.d:/custom_data/custom.conf.d:z
 
   icingadb:
+    container_name: icingadb
     environment:
       ICINGADB_DATABASE_HOST: mysql
       ICINGADB_DATABASE_PORT: 3306
@@ -136,10 +139,12 @@ services:
     logging: *default-logging
 
   icingadb-redis:
+    container_name: icingadb-redis
     image: redis
     logging: *default-logging
 
   icingaweb:
+    container_name: icingaweb
     depends_on:
       - mysql
     environment:
@@ -150,7 +155,7 @@ services:
     logging: *default-logging
     image: icinga/icingaweb2
     ports:
-      - 8080:8080
+      - 8083:8080
     # Restart Icinga Web container automatically since we have to wait for the database to be ready.
     # Please note that this needs a more sophisticated solution.
     restart: on-failure
@@ -158,6 +163,7 @@ services:
       - icingaweb:/data
 
   mysql:
+    container_name: mysql
     image: mariadb:10.7
     command: --default-authentication-plugin=mysql_native_password
     environment:
@@ -168,8 +174,8 @@ services:
     logging: *default-logging
     volumes:
       - mysql:/var/lib/mysql
-      - ./env/mysql/:/docker-entrypoint-initdb.d/
-
+      - ./env/mysql/:/docker-entrypoint-initdb.d/:z
+        
 volumes:
   icinga2:
   icingaweb:
