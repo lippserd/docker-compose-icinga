@@ -29,3 +29,8 @@ The easiest way to upgrade is to start over, removing all the volumes and
 therefore wiping out any configurations you have changed:
 
 `docker-compose down --volumes && docker-compose build --pull && docker-compose -p icinga-playground up -d`
+
+
+### Infrastructure model
+
+![Infrastructure model](.infragenie/infrastructure_model.png)
