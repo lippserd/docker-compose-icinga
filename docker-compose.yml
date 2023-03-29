@@ -144,9 +144,7 @@ services:
       - mysql
     environment:
       icingaweb.enabledModules: director, icingadb, incubator
-      <<: *icinga-db-web-config
-      <<: *icinga-director-config
-      <<: *icinga-web-config
+      <<: [*icinga-db-web-config, *icinga-director-config, *icinga-web-config]
     logging: *default-logging
     image: icinga/icingaweb2
     ports:
