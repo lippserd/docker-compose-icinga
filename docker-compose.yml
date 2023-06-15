@@ -1,11 +1,16 @@
 version: '3.7'
 
+x-icingadb-redis-host: &icingadb-redis-host icingadb-redis
+x-icingadb-host: &icingadb-host icingadb
+x-icinga2-host: &icinga2-host icinga2
+x-mysql-host: &mysql-host mysql
+
 x-icinga-db-web-config:
   &icinga-db-web-config
   icingaweb.modules.icingadb.config.icingadb.resource: icingadb
-  icingaweb.modules.icingadb.redis.redis1.host: icingadb-redis
+  icingaweb.modules.icingadb.redis.redis1.host: *icingadb-redis-host
   icingaweb.modules.icingadb.redis.redis1.port: 6379
-  icingaweb.modules.icingadb.commandtransports.icinga2.host: icinga2
+  icingaweb.modules.icingadb.commandtransports.icinga2.host: *icinga2-host
   icingaweb.modules.icingadb.commandtransports.icinga2.port: 5665
   icingaweb.modules.icingadb.commandtransports.icinga2.password: ${ICINGAWEB_ICINGA2_API_USER_PASSWORD:-icingaweb}
   icingaweb.modules.icingadb.commandtransports.icinga2.transport: api
@@ -13,7 +18,7 @@ x-icinga-db-web-config:
   icingaweb.resources.icingadb.charset: utf8mb4
   icingaweb.resources.icingadb.db: mysql
   icingaweb.resources.icingadb.dbname: icingadb
-  icingaweb.resources.icingadb.host: mysql
+  icingaweb.resources.icingadb.host: *mysql-host
   icingaweb.resources.icingadb.password: ${ICINGADB_MYSQL_PASSWORD:-icingadb}
   icingaweb.resources.icingadb.type: db
   icingaweb.resources.icingadb.username: icingadb
@@ -22,14 +27,14 @@ x-icinga-director-config:
   &icinga-director-config
   icingaweb.modules.director.config.db.resource: director-mysql
   icingaweb.modules.director.kickstart.config.endpoint: icinga2
-  icingaweb.modules.director.kickstart.config.host: icinga2
+  icingaweb.modules.director.kickstart.config.host: *icinga2-host
   icingaweb.modules.director.kickstart.config.port: 5665
   icingaweb.modules.director.kickstart.config.username: icingaweb
   icingaweb.modules.director.kickstart.config.password: ${ICINGAWEB_ICINGA2_API_USER_PASSWORD:-icingaweb}
   icingaweb.resources.director-mysql.charset: utf8mb4
   icingaweb.resources.director-mysql.db: mysql
   icingaweb.resources.director-mysql.dbname: director
-  icingaweb.resources.director-mysql.host: mysql
+  icingaweb.resources.director-mysql.host: *mysql-host
   icingaweb.resources.director-mysql.password: ${ICINGA_DIRECTOR_MYSQL_PASSWORD:-director}
   icingaweb.resources.director-mysql.type: db
   icingaweb.resources.director-mysql.username: director
@@ -48,7 +53,7 @@ x-icinga-web-config:
   icingaweb.resources.icingaweb-mysql.charset: utf8mb4
   icingaweb.resources.icingaweb-mysql.db: mysql
   icingaweb.resources.icingaweb-mysql.dbname: icingaweb
-  icingaweb.resources.icingaweb-mysql.host: mysql
+  icingaweb.resources.icingaweb-mysql.host: *mysql-host
   icingaweb.resources.icingaweb-mysql.password: icingaweb
   icingaweb.resources.icingaweb-mysql.type: db
   icingaweb.resources.icingaweb-mysql.username: icingaweb
@@ -74,6 +79,7 @@ networks:
 
 services:
   director:
+    container_name: director
     command:
       - /bin/bash
       - -ce
@@ -102,11 +108,13 @@ services:
     logging: *default-logging
     volumes:
       - icinga2:/data
-      - ./icingadb.conf:/config/icingadb.conf
-      - ./icingaweb-api-user.conf:/config/icingaweb-api-user.conf
-      - ./init-icinga2.sh:/config/init-icinga2.sh
+      - ./icingadb.conf:/config/icingadb.conf:z
+      - ./icingaweb-api-user.conf:/config/icingaweb-api-user.conf:z
+      - ./init-icinga2.sh:/config/init-icinga2.sh:z
 
   icinga2:
+    #container_name: icinga2
+    container_name: *icinga2-host
     command: [ "sh", "-c", "sleep 5 ; icinga2 daemon" ]
     depends_on:
       - icingadb-redis
@@ -118,9 +126,10 @@ services:
       - 5665:5665
     volumes:
       - icinga2:/data
-      - ./icinga2.conf.d:/custom_data/custom.conf.d
+      - ./icinga2.conf.d:/custom_data/custom.conf.d:z
 
   icingadb:
+    container_name: *icingadb-host
     environment:
       ICINGADB_DATABASE_HOST: mysql
       ICINGADB_DATABASE_PORT: 3306
@@ -136,10 +145,12 @@ services:
     logging: *default-logging
 
   icingadb-redis:
+    container_name: *icingadb-redis-host
     image: redis
     logging: *default-logging
 
   icingaweb:
+    container_name: icingaweb
     depends_on:
       - mysql
     environment:
@@ -156,6 +167,7 @@ services:
       - icingaweb:/data
 
   mysql:
+    container_name: *mysql-host
     image: mariadb:10.7
     command: --default-authentication-plugin=mysql_native_password
     environment:
@@ -166,8 +178,8 @@ services:
     logging: *default-logging
     volumes:
       - mysql:/var/lib/mysql
-      - ./env/mysql/:/docker-entrypoint-initdb.d/
-
+      - ./env/mysql/:/docker-entrypoint-initdb.d/:z
+        
 volumes:
   icinga2:
   icingaweb:

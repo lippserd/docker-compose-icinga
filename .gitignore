@@ -1,5 +1,8 @@
 # Exclude all hidden files
 .*
 
+icinga2.conf.d/*
+!icinga2.conf.d/README.md
+
 # Except those related to Git (and GitHub)
 !.git*
