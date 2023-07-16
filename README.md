@@ -10,6 +10,12 @@ Icinga Web is provided on port **8080** and you can access the Icinga 2 API on p
 The default user of Icinga Web is `icingaadmin` with password `icinga` and
 the default user of the Icinga 2 API for Web is `icingaweb` with password `icingaweb`.
 
+## Recent image changes ##
+
+Notes on deployment failure related to MySQL permissions are in :
+  doc/mysql-cannot-open-directory-docker-entrypoint-initdb.md
+
+
 ## Upgrading from v1.1.0 to v1.2.0
 
 **v1.2.0** deploys Icinga Web ≥ 2.11.0, Icinga 2 ≥ 2.13.4, Icinga DB ≥ 1.0.0 and Icinga DB Web ≥ 1.0.0.
