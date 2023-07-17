@@ -88,7 +88,7 @@ services:
         icingacli director daemon run
     entrypoint: []
     logging: *default-logging
-    image: icinga/icingaweb2
+    image: icinga/icingaweb2:2.11.4
     restart: on-failure
     volumes:
       - icingaweb:/data
@@ -98,7 +98,7 @@ services:
   init-icinga2:
     command: [ "/config/init-icinga2.sh" ]
     environment: *icinga2-environment
-    image: icinga/icinga2
+    image: icinga/icinga2:2.14.0
     logging: *default-logging
     volumes:
       - icinga2:/data
@@ -112,7 +112,7 @@ services:
       - icingadb-redis
       - init-icinga2
     environment: *icinga2-environment
-    image: icinga/icinga2
+    image: icinga/icinga2:2.14.0
     logging: *default-logging
     ports:
       - 5665:5665
@@ -132,11 +132,11 @@ services:
     depends_on:
       - mysql
       - icingadb-redis
-    image: icinga/icingadb
+    image: icinga/icingadb@sha256:be9f88bd13e6d424355217ee2d416b74c82a46258a345109925543559648352f
     logging: *default-logging
 
   icingadb-redis:
-    image: redis
+    image: redis@sha256:08a82d4bf8a8b4dd94e8f5408cdbad9dd184c1cf311d34176cd3e9972c43f872
     logging: *default-logging
 
   icingaweb:
@@ -146,7 +146,7 @@ services:
       icingaweb.enabledModules: director, icingadb, incubator
       <<: [*icinga-db-web-config, *icinga-director-config, *icinga-web-config]
     logging: *default-logging
-    image: icinga/icingaweb2
+    image: icinga/icingaweb2:2.11.4
     ports:
       - 8080:8080
     # Restart Icinga Web container automatically since we have to wait for the database to be ready.
@@ -154,6 +154,7 @@ services:
     restart: on-failure
     volumes:
       - icingaweb:/data
+      - log:/var/log
 
   mysql:
     image: mariadb:10.7
@@ -171,4 +172,5 @@ services:
 volumes:
   icinga2:
   icingaweb:
+  log:
   mysql:
