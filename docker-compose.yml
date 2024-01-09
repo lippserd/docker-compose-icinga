@@ -34,6 +34,22 @@ x-icinga-director-config:
   icingaweb.resources.director-mysql.type: db
   icingaweb.resources.director-mysql.username: director
 
+x-icinga-vspheredb-config:
+  &icinga-vspheredb-config
+  icingaweb.modules.vspheredb.config.db.resource: vspheredb-mysql
+  icingaweb.modules.vspheredb.kickstart.config.endpoint: icinga2
+  icingaweb.modules.vspheredb.kickstart.config.host: icinga2
+  icingaweb.modules.vspheredb.kickstart.config.port: 5665
+  icingaweb.modules.vspheredb.kickstart.config.username: icingaweb
+  icingaweb.modules.vspheredb.kickstart.config.password: ${ICINGAWEB_ICINGA2_API_USER_PASSWORD:-icingaweb}
+  icingaweb.resources.vspheredb-mysql.charset: utf8mb4
+  icingaweb.resources.vspheredb-mysql.db: mysql
+  icingaweb.resources.vspheredb-mysql.dbname: vspheredb
+  icingaweb.resources.vspheredb-mysql.host: mysql
+  icingaweb.resources.vspheredb-mysql.password: ${ICINGA_VSPHEREDB_MYSQL_PASSWORD:-vspheredb}
+  icingaweb.resources.vspheredb-mysql.type: db
+  icingaweb.resources.vspheredb-mysql.username: vspheredb
+
 x-icinga-web-config:
   &icinga-web-config
   icingaweb.authentication.icingaweb2.backend: db
@@ -144,7 +160,7 @@ services:
       - mysql
     environment:
       icingaweb.enabledModules: director, icingadb, incubator
-      <<: [*icinga-db-web-config, *icinga-director-config, *icinga-web-config]
+      <<: [*icinga-db-web-config, *icinga-director-config, *icinga-vspheredb-config, *icinga-web-config]
     logging: *default-logging
     image: icinga/icingaweb2
     ports:
@@ -163,10 +179,28 @@ services:
       ICINGADB_MYSQL_PASSWORD: ${ICINGADB_MYSQL_PASSWORD:-icingadb}
       ICINGAWEB_MYSQL_PASSWORD: ${ICINGAWEB_MYSQL_PASSWORD:-icingaweb}
       ICINGA_DIRECTOR_MYSQL_PASSWORD: ${ICINGA_DIRECTOR_MYSQL_PASSWORD:-director}
+      ICINGA_VSPHEREDB_MYSQL_PASSWORD: ${ICINGA_VSPHEREDB_MYSQL_PASSWORD:-vspheredb}
     logging: *default-logging
     volumes:
       - mysql:/var/lib/mysql
       - ./env/mysql/:/docker-entrypoint-initdb.d/
+
+  vspheredb:
+    command:
+      - /bin/bash
+      - -ce
+      - |
+        echo "Testing the database connection. Container could restart."
+        (echo > /dev/tcp/mysql/3306) >/dev/null 2>&1
+        icingacli vspheredb migration run
+        echo "Starting Icinga Vspheredb daemon."
+        icingacli vspheredb daemon run
+    entrypoint: []
+    logging: *default-logging
+    image: icinga/icingaweb2
+    restart: on-failure
+    volumes:
+      - icingaweb:/data
 
 volumes:
   icinga2:
