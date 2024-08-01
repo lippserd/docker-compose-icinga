@@ -1,4 +1,3 @@
-version: '3.7'
 
 x-icinga-db-web-config:
   &icinga-db-web-config
@@ -139,9 +138,19 @@ services:
     image: redis
     logging: *default-logging
 
+  init-icingaweb:
+    command: [ "/config/init-icinga2web.sh" ]
+    image: icinga/icingaweb2
+    logging: *default-logging
+    volumes:
+      - icingaweb:/data
+      - ./icinga2web.conf.d:/custom_dataweb/customweb.conf.d
+      - ./init-icinga2web.sh:/config/init-icinga2web.sh
+
   icingaweb:
     depends_on:
       - mysql
+      - init-icingaweb
     environment:
       icingaweb.enabledModules: director, icingadb, incubator
       <<: [*icinga-db-web-config, *icinga-director-config, *icinga-web-config]
@@ -154,6 +163,7 @@ services:
     restart: on-failure
     volumes:
       - icingaweb:/data
+      - ./icinga2web.conf.d:/custom_dataweb/customweb.conf.d
 
   mysql:
     image: mariadb:10.7
